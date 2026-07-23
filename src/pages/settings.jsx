@@ -206,7 +206,7 @@ export default function SettingsPage() {
 
       {/* Mobile-only bottom tab bar */}
       <div className="set-mobile-tabbar">
-        <button className="set-tab-btn" onClick={() => navigate("/")}>
+        <button className="set-tab-btn" onClick={() => navigate("/dashboard")}>
           <Home size={22} />
           <span>Home</span>
         </button>
