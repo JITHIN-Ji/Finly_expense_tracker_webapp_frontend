@@ -425,12 +425,18 @@ const css = `
   /* ---------- Filters ---------- */
   .hist-filter-scroll,
   .hist-category-scroll {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    width: 100%;
-    padding: 0 40px;
-  }
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      width: 100%;
+      padding: 0 40px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .hist-filter-scroll::-webkit-scrollbar,
+    .hist-category-scroll::-webkit-scrollbar {
+      display: none;
+    }
   .hist-filter-scroll { padding-bottom: 10px; }
   .hist-category-scroll { padding-bottom: 16px; }
   .hist-filter-pill {
