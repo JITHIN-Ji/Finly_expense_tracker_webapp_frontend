@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 /* Matches RegisterScreen.tsx palette: mint / mintDark / textDark on white-glass */
 const TOKENS = {
@@ -47,6 +47,14 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Lock body scroll while the mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
   const goToSection = (hash) => {
     setOpen(false)
     if (location.pathname !== '/') {
@@ -67,6 +75,7 @@ export default function Navbar() {
   ]
 
   return (
+    <>
     <nav
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
@@ -81,15 +90,41 @@ export default function Navbar() {
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap');
         .hero-display { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.03em; }
         .hero-body { font-family: 'Inter', sans-serif; }
+
+        @keyframes menuFadeIn {
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .mobile-link-item {
+          animation: menuFadeIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        @keyframes panelSlideDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .mobile-panel {
+          animation: panelSlideDown 0.25s cubic-bezier(0.16,1,0.3,1) both;
+        }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 flex justify-between items-center h-20">
-        <Link to="/" className="flex items-center gap-2.5">
+        <button
+          onClick={() => {
+            setOpen(false)
+            if (location.pathname !== '/') {
+              navigate('/')
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }
+          }}
+          className="flex items-center gap-2.5"
+        >
           <WalletLogo />
           <span className="hero-display text-lg font-extrabold" style={{ color: TOKENS.mintDeep }}>
             Finly
           </span>
-        </Link>
+        </button>
 
         <div className="hidden lg:flex items-center gap-7">
           {links.map((l) => (
@@ -138,53 +173,97 @@ export default function Navbar() {
           >
             Download App
           </button>
+
+          {/* Animated hamburger -> X */}
           <button
-            className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center"
-            style={{ background: TOKENS.paper }}
+            className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center relative"
+            style={{ background: TOKENS.mist }}
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
+            aria-expanded={open}
           >
-            <span className="material-symbols-outlined text-xl" style={{ color: TOKENS.mintDeep }}>
-              {open ? 'close' : 'menu'}
-            </span>
+            <span
+              className="absolute block h-[2px] w-5 rounded-full transition-all duration-300"
+              style={{
+                background: TOKENS.mintDeep,
+                transform: open ? 'rotate(45deg)' : 'translateY(-4px)',
+              }}
+            />
+            <span
+              className="absolute block h-[2px] w-5 rounded-full transition-all duration-300"
+              style={{
+                background: TOKENS.mintDeep,
+                opacity: open ? 0 : 1,
+                transform: open ? 'scaleX(0)' : 'none',
+              }}
+            />
+            <span
+              className="absolute block h-[2px] w-5 rounded-full transition-all duration-300"
+              style={{
+                background: TOKENS.mintDeep,
+                transform: open ? 'rotate(-45deg)' : 'translateY(4px)',
+              }}
+            />
           </button>
         </div>
       </div>
+    </nav>
 
+      {/* Mobile full-screen panel (rendered outside <nav> so backdrop-filter on nav doesn't trap this fixed element) */}
       {open && (
         <div
-          className="lg:hidden px-6 py-5 flex flex-col gap-3"
-          style={{ background: 'rgba(255,255,255,0.94)', borderTop: `1px solid ${TOKENS.mint50}` }}
+          className="mobile-panel lg:hidden fixed left-0 right-0 top-20 bottom-0 z-40 overflow-y-auto"
+          style={{
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
         >
-          {links.map((l) => (
-            <button
-              key={l.hash}
-              onClick={() => goToSection(l.hash)}
-              className="text-left hero-body font-medium text-sm py-1"
-              style={{ color: TOKENS.ink, opacity: 0.8 }}
+          <div className="px-6 pt-6 pb-10 flex flex-col gap-1">
+            {links.map((l, i) => (
+              <button
+                key={l.hash}
+                onClick={() => goToSection(l.hash)}
+                className="mobile-link-item text-left hero-display font-bold text-2xl py-3.5 border-b active:opacity-50 transition-opacity"
+                style={{
+                  color: TOKENS.ink,
+                  borderColor: TOKENS.mist,
+                  animationDelay: `${i * 45}ms`,
+                }}
+              >
+                {l.label}
+              </button>
+            ))}
+
+            <div
+              className="mobile-link-item flex flex-col gap-3 mt-6"
+              style={{ animationDelay: `${links.length * 45}ms` }}
             >
-              {l.label}
-            </button>
-          ))}
-          <button
-            onClick={() => {
-              setOpen(false)
-              navigate('/login')
-            }}
-            className="hero-body px-6 py-2.5 rounded-full text-sm font-bold text-center mt-1"
-            style={{ background: TOKENS.mint, color: TOKENS.mintDeep }}
-          >
-            Continue in Web
-          </button>
-          <button
-            onClick={() => goToSection('#get-app')}
-            className="hero-body px-6 py-2.5 rounded-full text-sm font-bold text-center"
-            style={{ background: TOKENS.ink, color: TOKENS.paper }}
-          >
-            Download App
-          </button>
+              <button
+                onClick={() => {
+                  setOpen(false)
+                  navigate('/login')
+                }}
+                className="hero-body px-6 py-4 rounded-2xl text-base font-bold text-center active:scale-95 transition-transform"
+                style={{
+                  background: TOKENS.mint,
+                  color: TOKENS.mintDeep,
+                  boxShadow: '0 8px 20px -8px rgba(30,158,92,0.45)',
+                }}
+              >
+                Continue in Web
+              </button>
+              <button
+                onClick={() => goToSection('#get-app')}
+                className="hero-body px-6 py-4 rounded-2xl text-base font-bold text-center active:scale-95 transition-transform"
+                style={{ background: TOKENS.ink, color: TOKENS.paper }}
+              >
+                Download App
+              </button>
+            </div>
+          </div>
         </div>
       )}
-    </nav>
+    </>
   )
 }
