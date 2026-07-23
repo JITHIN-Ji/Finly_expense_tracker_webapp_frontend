@@ -288,7 +288,12 @@ const css = `
   .set-topbar { padding: 28px 40px 8px; flex-shrink: 0; }
   .set-title { font-size: 22px; font-weight: 700; color: ${colors.textDark}; margin: 0; }
 
-  .set-scroll { flex: 1; overflow-y: auto; }
+  .set-scroll {
+  flex: 1; overflow-y: auto;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* old Edge/IE */
+}
+.set-scroll::-webkit-scrollbar { display: none; }  /* Chrome/Safari/mobile */
   .set-content { padding: 12px 40px 40px; max-width: 900px; display: flex; flex-direction: column; gap: 24px; }
 
   .set-fade-in { animation: set-fade-up 0.38s cubic-bezier(0.16, 1, 0.3, 1) both; }
@@ -331,9 +336,9 @@ const css = `
 
   /* ---------- Logout ---------- */
   .set-logout-btn {
-    display: flex; justify-content: center; align-items: center; gap: 10px; background: #fff;
-    border: 1px solid ${colors.border}; border-radius: 16px; padding: 15px 0; cursor: pointer;
-    font-size: 14px; font-weight: 700; color: ${colors.coral}; max-width: 320px; width: 100%;
+  display: flex; justify-content: center; align-items: center; gap: 10px; background: #fff;
+  border: 1px solid ${colors.border}; border-radius: 16px; padding: 15px 0; cursor: pointer;
+  font-size: 14px; font-weight: 700; color: ${colors.coral}; width: 100%;
   }
   .set-logout-btn:hover { background: rgba(255,107,107,0.06); border-color: rgba(255,107,107,0.3); }
 
