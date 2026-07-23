@@ -487,13 +487,17 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilter]);
 
+  
   const handleMobileTabPress = (key) => {
-    if (key === "Add") {
-      setShowQuickAdd(true);
-      return;
-    }
-    setActiveTab(key);
-  };
+  if (key === "Add") {
+    setShowQuickAdd(true);
+    return;
+  }
+  const target = NAV_ITEMS.find((n) => n.key === key);
+  if (target) {
+    navigate(target.path);
+  }
+};
 
   const handleSelectCurrency = async (cur) => {
     setUserCurrency(cur);
@@ -551,15 +555,6 @@ export default function DashboardPage() {
               recentExpenses={recentExpenses}
               userCurrency={userCurrency}
             />
-          )}
-          {activeTab === "Insights" && (
-            <PlaceholderScreen title="Insights" text="Your spending trends and charts will show up here." />
-          )}
-          {activeTab === "History" && (
-            <PlaceholderScreen title="History" text="Every past transaction will be listed here." />
-          )}
-          {activeTab === "Settings" && (
-            <PlaceholderScreen title="Settings" text="Manage your profile, currency, and preferences." />
           )}
         </div>
       </div>
@@ -667,7 +662,12 @@ const css = `
   .db-load-error { color: ${colors.coral}; font-size: 13px; margin-bottom: 12px; }
 
   /* ---------- Filters ---------- */
-  .db-filter-row { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 24px; }
+  .db-filter-row {
+  display: flex; gap: 10px; overflow-x: auto; margin-bottom: 24px;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* old Edge/IE */
+}
+.db-filter-row::-webkit-scrollbar { display: none; }  /* Chrome/Safari/mobile */
   .db-filter-pill {
     padding: 10px 22px; border-radius: 999px; border: 1px solid ${colors.border}; background: #fff;
     white-space: nowrap; cursor: pointer; font-size: 13px; color: ${colors.textMuted}; flex-shrink: 0;
