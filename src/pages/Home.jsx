@@ -7,7 +7,7 @@ import Footer from '../components/Footer.jsx'
 import useReveal from '../hooks/useReveal.js'
 import Testimonials from '../components/testimonials.jsx'
 import Faq from '../components/faq.jsx'
-import Chatfeature from '../components/Chatfeature.jsx'
+import Chatfeature from '../components/ChatFeature.jsx'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 export default function Home() {
